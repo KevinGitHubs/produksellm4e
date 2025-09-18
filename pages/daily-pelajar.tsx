@@ -45,7 +45,7 @@ export default function DailyPelajar() {
 
   const detectLoop = async (net: cocoSsd.ObjectDetection) => {
     if (status !== 'mencari') return;
-    const video = webcamRef.current?.video; // ✅ ambil elemen video
+    const video = webcamRef.current?.video; // ✅ ambil elemen <video>
     if (!video) return requestAnimationFrame(() => detectLoop(net));
 
     const predictions = await net.detect(video); // ✅ pakai video
