@@ -2,27 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
-}
-
 @layer components {
-  .btn-primary {
-    @apply bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition;
+  .confetti::after {
+    content: '🎉';
+    position: absolute;
+    font-size: 2rem;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: confetti-fall 1s linear infinite;
+  }
+  @keyframes confetti-fall {
+    0% { transform: translateX(-50%) translateY(-20px); opacity: 1; }
+    100% { transform: translateX(-50%) translateY(100px); opacity: 0; }
   }
 }
