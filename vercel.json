@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "pages/api/**/*.ts": {
+      "maxDuration": 10
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/daily/reset-win",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}
