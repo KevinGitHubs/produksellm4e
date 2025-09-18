@@ -45,10 +45,10 @@ export default function DailyPelajar() {
 
   const detectLoop = async (net: cocoSsd.ObjectDetection) => {
     if (status !== 'mencari') return;
-    const video = webcamRef.current?.video; // ✅ ambil elemen <video>
+    const video = webcamRef.current?.video as HTMLVideoElement | undefined;
     if (!video) return requestAnimationFrame(() => detectLoop(net));
 
-    const predictions = await net.detect(video); // ✅ pakai video
+    const predictions = await net.detect(video);
     const found = predictions.some(p => p.class.toLowerCase() === benda.coco.toLowerCase() && p.score > 0.65);
     const fake = predictions.some(p => p.class.toLowerCase() === 'cell phone' && p.score > 0.7);
 
