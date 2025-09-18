@@ -1,3 +1,4 @@
+// pages/daily-pelajar.tsx
 import { useEffect, useRef, useState } from 'react';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 import '@tensorflow/tfjs';
@@ -44,8 +45,10 @@ export default function DailyPelajar() {
 
   const detectLoop = async (net: cocoSsd.ObjectDetection) => {
     if (status !== 'mencari') return;
-    if (!webcamRef.current) return requestAnimationFrame(() => detectLoop(net));
-    const predictions = await net.detect(webcamRef.current);
+    const video = webcamRef.current?.video; // ✅ ambil elemen video
+    if (!video) return requestAnimationFrame(() => detectLoop(net));
+
+    const predictions = await net.detect(video); // ✅ pakai video
     const found = predictions.some(p => p.class.toLowerCase() === benda.coco.toLowerCase() && p.score > 0.65);
     const fake = predictions.some(p => p.class.toLowerCase() === 'cell phone' && p.score > 0.7);
 
@@ -54,7 +57,6 @@ export default function DailyPelajar() {
       setTimeout(() => setStatus('mencari'), 1500);
       return;
     }
-
     if (found) {
       setStatus('ketemu');
       await kirimMenang();
@@ -75,19 +77,31 @@ export default function DailyPelajar() {
     stream?.getTracks().forEach(t => t.stop());
   };
 
+  if (status === 'selesai') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-6">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white/10 backdrop-blur rounded-xl p-8 text-center text-white"
+        >
+          <div className="text-3xl mb-2">🎉</div>
+          <h2 className="text-2xl font-bold mb-2">Benda ditemukan!</h2>
+          <p className="mb-4">Kamu juara ke-1 → +{koin} M4E</p>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white p-6">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold text-center mb-4">Cari Benda Pelajar - Live Scan</h1>
-
         <div className="bg-white/10 backdrop-blur rounded-xl p-6 text-center">
           <div className="text-5xl mb-2">{benda.emoji}</div>
           <div className="text-xl font-semibold mb-4">Arahkan kamera ke: <span className="text-yellow-300">{benda.nama}</span></div>
-
           <div className="relative">
             <Webcam ref={webcamRef} autoPlay playsInline muted className="rounded-lg w-full" />
-
-            {/* Animasi Ketemu */}
             {status === 'ketemu' && (
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -97,8 +111,6 @@ export default function DailyPelajar() {
                 <div className="text-3xl">✅ Ketemu!</div>
               </motion.div>
             )}
-
-            {/* Animasi Gagal */}
             {status === 'gagal' && (
               <motion.div
                 animate={{ x: [-6, 6, -6, 6, 0] }}
@@ -109,22 +121,8 @@ export default function DailyPelajar() {
               </motion.div>
             )}
           </div>
-
           <p className="text-sm opacity-80 mt-4">Deteksi berlangsung otomatis. Pastikan benda asli, bukan layar.</p>
         </div>
-
-        {/* Confetti Juara */}
-        {status === 'selesai' && (
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="mt-6 bg-white/10 backdrop-blur rounded-xl p-6 text-center"
-          >
-            <div className="text-3xl mb-2">🎉</div>
-            <div className="text-xl font-bold">Juara ke-1 → +{koin} M4E</div>
-            <div className="text-sm opacity-80">Kembali ke dashboard...</div>
-          </motion.div>
-        )}
       </div>
     </div>
   );
